@@ -1,0 +1,67 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+
+int main()
+{
+    cout<<"Enter the data to be sent\n";
+    string s;
+    cin>>s;
+    vector< bitset<8> > binary;
+    for(int i=0;i<s.size();++i)//CONVERTING STRINGS INTO BINARY DIGITS
+    {
+        int m=s[i];
+        bitset<8> n(m);
+        binary.push_back(n);
+    }
+    bitset<8> bs;
+    for(int i=7;i>=0;--i)//GENERATING THE LRC CODE
+    {
+        int x=0;
+        for(int j=0;j<binary.size();++j)
+        {
+            if(binary[j][i]==1) x++;
+        }
+        if(x%2) bs.set(i);
+    }
+    binary.push_back(bs);
+    cout<<"sent Data: \n";
+    for(auto &it:binary) cout<<it;
+    cout<<"\n";
+    cout<<"Enter received data:\n";
+    string st;
+    int y=0;
+    string s1="",s2="";
+    for(int i=st.size()-8;i<st.size();++i) s1+=st[i];//EXTRACTING THE RECEIVED LRC CODE
+    vector< vector<char> > received;
+    vector<char> vt;
+    for(int i=0;i<st.size()-8;++i)//CREATING A 2D FORM OF THE RECEIVED DATA TO CHECK LRC
+    {
+        vt.push_back(st[i]);
+        if((i+1)%8==0) 
+        {
+            received.push_back(vt);
+            vt.clear();
+        }
+    }
+    for(int i=0;i<8;++i)//GENERATING LRC ON RECEIVER SIDE
+    {
+        int p=0;
+        for(int j=0;j<received.size();++j)
+        {
+            if(received[j][i]=='1') p++;
+        }
+        if(p%2) s2+='1';
+        else s2+='0';
+    }
+    for(int i=0;i<8;++i)//CHECKING WHETHER RECEIVED LRC CODE AND GENERATED LRC CODE(GENERATED ON RECEIVER SIDE) MATCHES OR NOT
+    {
+        if(s1[i]!=s2[i]) 
+        {
+            cout<<"data is corrupted\n";
+            return 0;
+        }
+    }
+    cout<<"No error found\n";
+    return 0;
+}
