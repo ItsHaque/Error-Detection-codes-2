@@ -1,0 +1,74 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+    cout<<"Enter the data to be sent\n";
+    string s;
+    cin>>s;
+    vector< bitset<8> > binary;
+    for(int i=0;i<s.size();++i)//CONVERTING STRINGS INTO BINARY DIGITS
+    {
+        int m=s[i];
+        bitset<8> n(m);
+        binary.push_back(n);
+    }
+    bitset<8> checksum;
+    int sum=0;
+    for(int i=0;i<8;i++)//GENERATING CHECKSUM
+    {
+        for(int j=0;j<binary.size();++j)
+        {
+            sum+=binary[j][i];
+            
+        }
+        bitset<4> x(sum);
+        checksum[i]=x[0];
+        x>>=1;
+        int carry=(int) x.to_ulong();
+        sum=carry;
+    }
+    bitset<8> y(sum);
+    checksum=checksum | y;
+    checksum.flip();//FINAL CHECKSUM
+    cout<<"Data sent: \n";
+    cout<<checksum;
+    for(auto &it:binary) cout<<it;
+    cout<<"\n";
+    cout<<"Enter received data:\n";
+    string st;
+    cin>>st;
+    string s1="",s2="";
+    vector< vector<char> > received;
+    vector<char> vt;
+    for(int i=0;i<st.size();++i)//CREATING A 2D FORM OF THE RECEIVED DATA TO CHECK FOR ERROR
+    {
+        vt.push_back(st[i]);
+        if((i+1)%8==0) 
+        {
+            received.push_back(vt);
+            vt.clear();
+        }
+    }
+    bitset<8> checksumR;
+    int sumR=0;
+    for(int i=7;i>=0;i--)//CHECKING FOR ERROR
+    {
+        for(int j=0;j<received.size();++j)
+        {
+            sumR+=(int)received[j][i];
+        }
+        bitset<4> x(sumR);
+        checksumR[7-i]=x[0];
+        x>>=1;
+        int carry=(int) x.to_ulong();
+        sumR=carry;
+    }
+    bitset<8> z(sumR);
+    checksumR=checksumR | z;
+    checksumR.flip();
+    int decimal=(int) checksumR.to_ulong();
+    if(decimal==0) cout<<"No Error Detected\n";
+    else cout<<"Error found\n";
+    return 0;
+}
