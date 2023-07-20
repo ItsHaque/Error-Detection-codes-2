@@ -1,0 +1,42 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+
+int main()
+{
+    cout<<"Enter the data to be sent\n";
+    string s;
+    cin>>s;
+    vector< pair< bitset<8>, int > > binary;
+    for(int i=0;i<s.size();++i)//CONVERTING STRINGS INTO BINARY DIGITS AND GENERATING PARITY BIT
+    {
+        int m=s[i];
+        bitset<8> n(m);
+        int x=n.count();
+        if(x%2) n.set(7);
+        binary.push_back({n,x});
+    }
+    cout<<"sent Data with even parity: \n";
+    for(auto &it:binary) cout<<it.first;
+    cout<<"\n";
+    cout<<"Enter received data:\n";
+    string st;
+    cin>>st;
+    int y=0;
+    for(int i=0;i<st.size();++i)//CHECKING WHETHER THE PARITY MATCHES OR NOT ON RECEIVER SIDE
+    {
+
+        if(st[i]=='1') y++;
+        if((i+1)%8==0) 
+        {
+            if(y%2) 
+            {
+                cout<<"Data is corrupted\n";
+                return 0;
+            }
+            else y=0;
+        }
+    }
+    cout<<"No error found\n";
+    return 0;
+}
