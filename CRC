@@ -1,0 +1,81 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+string _xor(string s1, string s2)
+{
+    int len=s1.size();
+    string result="";
+    for(int i=1;i<len;++i)
+    {
+        if(s1[i]==s2[i]) result+='0';
+        else result+='1';
+    }
+    return result;
+}
+
+string mod2div(string dividend, string divisor)
+{
+    int m=divisor.size();
+    string temp=dividend.substr(0,m);
+    int n=dividend.size();
+    while(m<n)
+    {
+        if(temp[0]=='1') temp=_xor(temp,divisor)+dividend[m];
+        else temp=_xor(temp,string(m,'0'))+dividend[m];
+        m++;
+    }
+    if(temp[0]=='1') temp=_xor(temp,divisor)+dividend[m];
+    else temp=_xor(temp,string(m,'0'))+dividend[m];
+    return temp;
+}
+
+string sender(string data, string key)
+{
+    int lkey=key.size();
+    string appendedData=data+string(lkey-1,'0');
+    string rem=mod2div(appendedData,key);
+    return rem;
+}
+
+string receiver(string received, string key)
+{
+    string rem=mod2div(received,key);
+    return rem;
+}
+
+int main()
+{
+    cout<<"Enter the data to be sent\n";
+    string s;
+    cin>>s;
+    string data="";
+    for(int i=0;i<s.size();++i)//CONVERTING STRINGS INTO BINARY DIGITS
+    {
+        int m=s[i];
+        bitset<8> n(m);
+        data+=n.to_string();
+    }
+    cout<<"Enter the key\n";
+    string key;
+    cin>>key;
+    string CRCCode=sender(data,key);
+    cout<<"CRC Code: "<<CRCCode<<"\n";
+    cout<<"Sent data:\n"<<data+CRCCode<<"\n";
+    cout<<"Enter the received data:\n";
+    string received;
+    cin>>received;
+    string rem=receiver(received,key);
+    string expectedRem=string(key.size()-1,'0');
+    //cout<<rem<<" "<<expectedRem<<"\n";
+    cout<<"Remainder after checking at receiver side: "<<rem<<"\n";
+    int zero=0,one=0;
+    for(int i=0;i<rem.size();++i)
+    {
+        if(rem[i]=='0') zero++;
+        if(rem[i]=='1') one++;
+    }
+    // cout<<z<<" "<<one<<"\n";
+    if(zero==key.size()-1 && one==0) cout<<"No Error Detected\n";
+    else cout<<"Error Found\n";
+    return 0;
+}
